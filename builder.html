@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elea — Stack Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #0B1B3A;
+  --navy2:   #132545;
+  --navy3:   #1A3060;
+  --gold:    #C9A84C;
+  --gold2:   #E4C46A;
+  --white:   #FFFFFF;
+  --off:     #F0F4FC;
+  --muted:   #7A90B8;
+  --border:  rgba(201,168,76,0.15);
+
+  --c-domain:  #3B82F6;
+  --c-design:  #8B5CF6;
+  --c-code:    #06B6D4;
+  --c-auth:    #C9A84C;
+  --c-data:    #F97316;
+  --c-ai:      #EC4899;
+  --c-cloud:   #22D3EE;
+  --c-monitor: #EF4444;
+  --c-analytics:#10B981;
+  --c-automate:#F59E0B;
+  --c-payments:#6366F1;
+  --c-comms:   #14B8A6;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--navy);
+  color:var(--white);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%,rgba(201,168,76,0.07) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 70% at 90% 100%,rgba(30,48,96,0.5) 0%,transparent 55%),
+    repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,0.015) 60px),
+    repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,0.015) 60px);
+}
+
+/* ── HEADER ── */
+header{
+  position:sticky;top:0;z-index:200;
+  background:rgba(11,27,58,0.95);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  height:58px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 28px;
+}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-mark{width:30px;height:30px;border-radius:6px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--navy);}
+.logo-name{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;letter-spacing:-.3px;}
+.logo-name em{color:var(--gold);font-style:normal;}
+.logo-sub{font-size:10.5px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-top:1px;}
+.hdr-nav{display:flex;gap:2px;}
+.hdr-tab{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;color:var(--muted);background:transparent;border:none;cursor:pointer;transition:all .15s;font-family:'Nunito',sans-serif;}
+.hdr-tab:hover{color:var(--white);background:rgba(255,255,255,.05);}
+.hdr-tab.active{color:var(--gold);background:rgba(201,168,76,.1);}
+.hdr-pill{background:rgba(201,168,76,.12);border:1px solid var(--border);border-radius:16px;padding:4px 14px;font-size:11.5px;color:var(--gold);font-weight:600;}
+
+/* ── LAYOUT ── */
+.app{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr 380px;
+  height:calc(100vh - 58px);
+}
+
+/* ── LEFT: MAP PANEL ── */
+.map-panel{
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  border-right:1px solid var(--border);
+}
+
+/* Stage selector */
+.stage-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 20px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  background:rgba(255,255,255,.02);
+  flex-shrink:0;
+}
+.stage-label{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-right:4px;white-space:nowrap;}
+.stage-btn{
+  padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;
+  border:1.5px solid rgba(255,255,255,.1);background:transparent;
+  color:var(--muted);cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;
+  white-space:nowrap;
+}
+.stage-btn:hover{border-color:var(--gold);color:var(--gold);}
+.stage-btn.active{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+
+/* Map container */
+.map-container{
+  flex:1;position:relative;overflow:hidden;
+  padding:20px;
+}
+
+/* SVG connections */
+#connections-svg{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:1;
+}
+.conn-line{
+  stroke:rgba(255,255,255,.08);
+  stroke-width:1.5;
+  fill:none;
+  stroke-dasharray:4 4;
+  transition:all .3s;
+}
+.conn-line.active{
+  stroke:var(--gold);stroke-width:2.5;
+  stroke-dasharray:none;
+  filter:drop-shadow(0 0 4px rgba(201,168,76,0.6));
+  opacity:1;
+}
+.conn-line.dimmed{stroke:rgba(255,255,255,.03);}
+
+/* Node grid */
+.nodes-grid{
+  position:relative;z-index:2;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(4,1fr);
+  gap:12px;
+  height:100%;
+}
+
+/* Category node */
+.cat-node{
+  position:relative;
+  background:var(--navy2);
+  border:2px solid rgba(255,255,255,.06);
+  border-radius:16px;
+  padding:14px 14px 12px;
+  cursor:pointer;
+  transition:all .25s;
+  display:flex;flex-direction:column;gap:6px;
+  animation:nodeIn .4s ease both;
+}
+.cat-node:hover{
+  transform:translateY(-3px);
+  border-color:rgba(255,255,255,.18);
+  box-shadow:0 12px 32px rgba(0,0,0,.4);
+}
+.cat-node.selected{
+  transform:translateY(-3px);
+  box-shadow:0 0 0 2px var(--accent, var(--gold)), 0 12px 32px rgba(0,0,0,.5);
+  border-color:transparent;
+}
+.cat-node.dimmed{opacity:.3;transform:none;}
+.cat-node.stage-highlight{
+  box-shadow:0 0 0 2px var(--accent, var(--gold));
+  border-color:transparent;
+  animation:pulse 2s ease infinite;
+}
+
+@keyframes nodeIn{
+  from{opacity:0;transform:scale(.9) translateY(8px);}
+  to{opacity:1;transform:scale(1) translateY(0);}
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 2px var(--accent, var(--gold));}
+  50%{box-shadow:0 0 0 5px rgba(201,168,76,.2), 0 0 0 2px var(--accent, var(--gold));}
+}
+
+/* Node top accent line */
+.cat-node::before{
+  content:'';position:absolute;top:0;left:12px;right:12px;height:2px;
+  border-radius:0 0 2px 2px;
+  background:var(--accent, var(--gold));
+  opacity:.6;
+  transition:opacity .25s;
+}
+.cat-node:hover::before,.cat-node.selected::before{opacity:1;}
+
+.node-icon{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+  position:relative;
+}
+.node-icon::after{
+  content:'';position:absolute;inset:0;border-radius:10px;
+  background:var(--accent, var(--gold));opacity:.1;
+}
+.node-name{
+  font-family:'Syne',sans-serif;
+  font-size:12.5px;font-weight:700;
+  line-height:1.2;
+}
+.node-tagline{
+  font-size:11px;color:var(--muted);line-height:1.4;
+  font-weight:500;
+}
+.node-step{
+  display:none;
+  position:absolute;top:8px;right:10px;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--gold);color:var(--navy);
+  font-size:10px;font-weight:800;
+  align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;
+}
+body.stage-mode .node-step{display:flex;}
+
+/* Layer labels */
+.layer-label{
+  position:absolute;left:6px;
+  font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;color:rgba(255,255,255,.2);
+  writing-mode:horizontal-tb;
+  pointer-events:none;z-index:3;
+}
+
+/* ── RIGHT: DETAIL PANEL ── */
+.detail-panel{
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  background:rgba(11,27,58,.4);
+}
+
+/* Welcome state */
+.welcome-state{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  height:100%;padding:32px;text-align:center;gap:16px;
+}
+.welcome-icon{font-size:52px;line-height:1;}
+.welcome-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--white);}
+.welcome-sub{font-size:13.5px;color:var(--muted);line-height:1.7;max-width:280px;}
+.welcome-hint{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(201,168,76,.1);border:1px solid var(--border);
+  border-radius:10px;padding:10px 16px;
+  font-size:12px;color:var(--gold);font-weight:600;margin-top:8px;
+}
+
+/* Detail content */
+.detail-content{
+  display:none;flex-direction:column;
+  height:100%;overflow-y:auto;
+}
+.detail-content.visible{display:flex;}
+.detail-content::-webkit-scrollbar{width:4px;}
+.detail-content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* Detail header */
+.detail-hdr{
+  padding:24px 22px 18px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  flex-shrink:0;
+}
+.detail-icon-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.detail-icon{
+  width:54px;height:54px;border-radius:13px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;
+  background:rgba(255,255,255,.07);
+  border:1.5px solid rgba(255,255,255,.1);
+}
+.detail-title-wrap{}
+.detail-cat-label{
+  font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  margin-bottom:4px;
+}
+.detail-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;line-height:1.1;}
+
+.detail-tagline{
+  font-size:13px;color:var(--muted);line-height:1.6;
+}
+
+/* Plain English box */
+.eli5-box{
+  margin:0 22px 0;
+  padding:14px 16px;
+  background:rgba(255,255,255,.04);
+  border-left:3px solid var(--accent, var(--gold));
+  border-radius:0 8px 8px 0;
+  font-size:13px;line-height:1.65;color:#CBD5E8;
+}
+.eli5-box strong{color:var(--white);}
+
+/* Sections */
+.detail-section{padding:0 22px;margin-top:18px;}
+.det-sec-label{
+  font-size:10px;font-weight:800;text-transform:uppercase;
+  letter-spacing:1.2px;color:var(--muted);
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.det-sec-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06);}
+
+/* Connects to */
+.connects-list{display:flex;flex-wrap:wrap;gap:6px;}
+.connect-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 10px;border-radius:8px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  font-size:11.5px;font-weight:600;cursor:pointer;
+  transition:all .15s;
+}
+.connect-chip:hover{border-color:var(--gold);color:var(--gold);}
+.connect-chip-dot{width:7px;height:7px;border-radius:50%;}
+
+/* Example tools */
+.tools-list{display:flex;flex-wrap:wrap;gap:6px;}
+.tool-chip{
+  padding:4px 11px;border-radius:6px;
+  background:rgba(255,255,255,.06);
+  font-size:12px;font-weight:600;color:var(--muted);
+  border:1px solid rgba(255,255,255,.07);
+}
+
+/* When to add */
+.when-card{
+  padding:11px 14px;border-radius:10px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.06);
+  font-size:12.5px;line-height:1.55;color:#CBD5E8;
+  margin-bottom:4px;
+}
+.when-tag{
+  display:inline-block;padding:2px 8px;border-radius:6px;
+  font-size:10.5px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.6px;margin-bottom:6px;
+}
+
+/* Beginner tip */
+.tip-box{
+  margin:18px 22px 24px;
+  padding:14px 16px;
+  border-radius:10px;
+  background:rgba(201,168,76,.08);
+  border:1px solid rgba(201,168,76,.2);
+}
+.tip-label{
+  font-size:10.5px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.8px;color:var(--gold);margin-bottom:6px;
+}
+.tip-text{font-size:12.5px;color:#CBD5E8;line-height:1.6;}
+
+/* ── BEGINNER PATH ── */
+.path-panel{
+  flex-shrink:0;
+  border-top:1px solid rgba(255,255,255,.06);
+  padding:14px 22px;
+  background:rgba(255,255,255,.02);
+}
+.path-title{
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
+  color:var(--gold);margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.path-steps{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;}
+.path-steps::-webkit-scrollbar{height:3px;}
+.path-steps::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.path-step{
+  flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:8px 10px;border-radius:9px;
+  background:rgba(255,255,255,.04);
+  border:1.5px solid rgba(255,255,255,.06);
+  cursor:pointer;transition:all .2s;min-width:68px;
+}
+.path-step:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.07);}
+.path-step.active-step{
+  background:rgba(201,168,76,.12);border-color:var(--gold);
+}
+.path-step-num{
+  width:18px;height:18px;border-radius:50%;
+  background:rgba(255,255,255,.08);
+  font-size:10px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;
+}
+.path-step.active-step .path-step-num{background:var(--gold);color:var(--navy);}
+.path-step-icon{font-size:16px;}
+.path-step-name{font-size:9.5px;font-weight:700;text-align:center;color:var(--muted);line-height:1.2;}
+.path-step.active-step .path-step-name{color:var(--gold);}
+
+/* ── FLOATING LEGEND ── */
+.legend{
+  position:absolute;bottom:14px;left:14px;
+  background:rgba(11,27,58,.9);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;padding:10px 14px;
+  z-index:10;backdrop-filter:blur(8px);
+}
+.legend-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:7px;}
+.legend-row{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);margin-bottom:4px;}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.detail-content{animation:fadeIn .25s ease both;}
+
+/* Status bar */
+.status-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:300;
+  height:28px;background:rgba(11,27,58,.97);
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:20px;
+  padding:0 24px;font-size:11px;color:var(--muted);
+}
+.sb-dot{width:6px;height:6px;border-radius:50%;background:#22D3EE;box-shadow:0 0 5px #22D3EE;}
+.sb-val{color:var(--gold);font-weight:700;}
+
+/* Scrollbars */
+*{scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.2) transparent;}
+
+  .nav-unified{display:flex;gap:2px;}
+  .nav-unified-tab{padding:6px 16px;border-radius:6px;font-size:12.5px;font-weight:600;color:var(--muted,#7A90B8);background:transparent;border:none;cursor:pointer;transition:all .15s;font-family:inherit;}
+  .nav-unified-tab:hover{color:#fff;background:rgba(255,255,255,.05);}
+  .nav-unified-tab.active{color:#C9A84C;background:rgba(201,168,76,.1);}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">EL</div>
+    <div>
+      <div class="logo-name"><em>Elea</em></div>
+      <div class="logo-sub">diZruption Labs · Zeno Global</div>
+    </div>
+  </div>
+  <div class="nav-unified">
+    <button class="nav-unified-tab" onclick="location.href='./index.html'">Home</button>
+    <button class="nav-unified-tab" onclick="location.href='./explore.html'">Explore</button>
+    <button class="nav-unified-tab" onclick="location.href='./my_stack.html'">My Stack</button>
+    <button class="nav-unified-tab active" onclick="location.href='./builder.html'">Builder</button>
+  </div>
+  <div class="hdr-pill">✦ Beginner Mode</div>
+</header>
+
+<div class="app">
+
+  <!-- ── LEFT: MAP ── -->
+  <div class="map-panel">
+
+    <!-- Stage selector -->
+    <div class="stage-bar">
+      <span class="stage-label">I am:</span>
+      <button class="stage-btn active" data-stage="all" onclick="setStage(this,'all')">Exploring everything</button>
+      <button class="stage-btn" data-stage="start" onclick="setStage(this,'start')">Just starting out</button>
+      <button class="stage-btn" data-stage="build" onclick="setStage(this,'build')">Building features</button>
+      <button class="stage-btn" data-stage="launch" onclick="setStage(this,'launch')">Ready to launch</button>
+      <button class="stage-btn" data-stage="grow" onclick="setStage(this,'grow')">Growing & scaling</button>
+    </div>
+
+    <div class="map-container" id="mapContainer">
+
+      <!-- SVG connection lines (drawn by JS) -->
+      <svg id="connections-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+
+      <!-- Nodes grid -->
+      <div class="nodes-grid" id="nodesGrid">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <div class="legend-title">Layer Type</div>
+        <div class="legend-row"><div class="legend-dot" style="background:#3B82F6"></div>Presence & Delivery</div>
+        <div class="legend-row"><div class="legend-dot" style="background:#C9A84C"></div>Users & Access</div>
+        <div class="legend-row"><div class="legend-dot" style="background:#F97316"></div>Data & Intelligence</div>
+        <div class="legend-row"><div class="legend-dot" style="background:#22D3EE"></div>Infrastructure</div>
+        <div class="legend-row"><div class="legend-dot" style="background:#10B981"></div>Operations</div>
+        <div class="legend-row"><div class="legend-dot" style="background:#6366F1"></div>Business</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT: DETAIL ── -->
+  <div class="detail-panel" id="detailPanel">
+
+    <!-- Welcome state -->
+    <div class="welcome-state" id="welcomeState">
+      <div class="welcome-icon">◈</div>
+      <div class="welcome-title">How Does a Tech Stack Work?</div>
+      <div class="welcome-sub">Every app or business is built from layers of tools that work together. Click any category on the map to see what it does, why you need it, and how it connects to everything else.</div>
+      <div class="welcome-hint">👆 Click a category block to explore it</div>
+    </div>
+
+    <!-- Detail content (hidden until a node is selected) -->
+    <div class="detail-content" id="detailContent">
+      <!-- Filled by JS -->
+    </div>
+
+    <!-- Beginner path strip (always visible at bottom) -->
+    <div class="path-panel">
+      <div class="path-title">📍 Beginner Build Path — start here, in order</div>
+      <div class="path-steps" id="pathSteps">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="status-bar">
+  <div class="sb-dot"></div>
+  <span>Elea Stack Builder</span>
+  <span>Categories: <span class="sb-val">12</span></span>
+  <span>Connections mapped: <span class="sb-val">22</span></span>
+  <span id="selectedStatus">Click any block to explore</span>
+  <span style="margin-left:auto;opacity:.4">Elea v1.0 · diZruption Labs</span>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────────────────
+const categories = [
+  {
+    id: 'domain',
+    name: 'Domain & Hosting',
+    icon: '🌐',
+    accent: '#3B82F6',
+    tagline: 'Your address on the internet',
+    gridPos: [0, 1], // [row, col]
+    connects: ['code','auth','analytics','cloud'],
+    pathStep: 1,
+    stages: ['start','launch','grow'],
+    eli5: `Think of this as your <strong>shop front on the internet</strong>. You need a name people can type in (domain like "mybusiness.com") and a place that shows your app to visitors when they arrive. Without this, nobody can find or use what you've built.`,
+    whatItDoes: [
+      'Gives your app a web address (yourbusiness.com)',
+      'Serves your app to visitors anywhere in the world, fast',
+      'Handles SSL (the padlock in the browser — shows your site is secure)',
+      'Routes visitors to the right page or version of your app',
+    ],
+    whenToAdd: { tag: 'Day 1', color: '#22D3EE', text: 'This is one of the very first things you set up — you need a home before you can build anything else people can visit.' },
+    tools: ['Vercel','Netlify','Cloudflare','GoDaddy','Namecheap','AWS Route 53'],
+    tip: 'Start with Vercel or Netlify — both are free for beginners and let you go live in minutes by connecting to your GitHub code. Buy your domain separately from GoDaddy or Namecheap (usually $10–15/year).',
+  },
+  {
+    id: 'design',
+    name: 'Design & UI',
+    icon: '🎨',
+    accent: '#8B5CF6',
+    tagline: 'What your app looks and feels like',
+    gridPos: [0, 0],
+    connects: ['code','domain'],
+    pathStep: 5,
+    stages: ['build','launch'],
+    eli5: `This is where you decide <strong>what your app looks like before you build it</strong>. Like drawing a blueprint before constructing a building, designers create mockups — visual pictures of every screen — so everyone agrees on the end result before writing any code.`,
+    whatItDoes: [
+      'Create visual mockups of every screen in your app',
+      'Design logos, color palettes, typography, and brand identity',
+      'Build interactive prototypes to test ideas before writing code',
+      'Hand off precise design specs to developers (spacing, colors, fonts)',
+    ],
+    whenToAdd: { tag: 'Early', color: '#8B5CF6', text: 'Design before you build. Changing visuals in a design tool takes 5 minutes; changing them in code takes 5 hours. Even rough wireframes save enormous time.' },
+    tools: ['Figma','Framer','Adobe XD','Canva','Sketch'],
+    tip: 'Figma is completely free for individuals and is the industry standard. Start by designing your 3 most important screens — home, login, and main feature — before writing a single line of code.',
+  },
+  {
+    id: 'code',
+    name: 'Version Control',
+    icon: '⎇',
+    accent: '#06B6D4',
+    tagline: 'Save, share, and track your code',
+    gridPos: [0, 2],
+    connects: ['domain','cloud','design'],
+    pathStep: 2,
+    stages: ['start','build','launch','grow'],
+    eli5: `Imagine writing a long essay and being able to <strong>save every single version</strong>, go back to any point in history, and have 10 people edit it simultaneously without overwriting each other. That's what version control does for your code. It's like Google Docs, but for software.`,
+    whatItDoes: [
+      'Store all your code safely in the cloud (never lose work again)',
+      'Track every change ever made and who made it',
+      'Let multiple developers work on the same codebase without conflicts',
+      'Trigger automatic deployments when you push new code',
+    ],
+    whenToAdd: { tag: 'Day 1', color: '#22D3EE', text: 'Set this up before you write your first line of code. Every developer on earth uses version control. It costs nothing and saves everything.' },
+    tools: ['GitHub','GitLab','Bitbucket'],
+    tip: 'GitHub is free for individuals and small teams. Create a free account, make a repository (a "project folder in the cloud"), and push your code there on day one. You\'ll thank yourself later.',
+  },
+  {
+    id: 'auth',
+    name: 'Authentication',
+    icon: '🔐',
+    accent: '#C9A84C',
+    tagline: 'How users prove who they are',
+    gridPos: [1, 0],
+    connects: ['database','cloud','domain'],
+    pathStep: 4,
+    stages: ['start','build','launch'],
+    eli5: `This is the <strong>login system</strong> for your app. It handles everything: letting people create accounts, log in with Google or Apple, reset forgotten passwords, and making sure each person only sees their own data. Building this yourself from scratch is extremely complex and risky — use a ready-made service.`,
+    whatItDoes: [
+      'Let users create accounts and log in (email, Google, Apple, etc.)',
+      'Verify that users are who they say they are with secure tokens',
+      'Manage passwords safely (hashed, never stored in plain text)',
+      'Control what each logged-in user is allowed to see or do',
+    ],
+    whenToAdd: { tag: 'Before launch', color: '#C9A84C', text: 'You need auth before real users can use your app. Set it up early — it affects how your whole database is structured.' },
+    tools: ['Supabase Auth','Auth0','Clerk','Firebase Auth','NextAuth'],
+    tip: 'If you\'re already using Supabase for your database, use Supabase Auth for free — it\'s built in. For everything else, Clerk is the friendliest to set up and free up to 10,000 users.',
+  },
+  {
+    id: 'database',
+    name: 'Database & Storage',
+    icon: '🗃️',
+    accent: '#F97316',
+    tagline: 'Where all your information lives',
+    gridPos: [1, 1],
+    connects: ['auth','cloud','ai','analytics','payments'],
+    pathStep: 3,
+    stages: ['start','build','launch','grow'],
+    eli5: `Every piece of information in your app — user profiles, posts, orders, messages — lives in a database. Think of it as <strong>a giant, organized spreadsheet in the sky</strong> that your app can read from and write to instantly. Without a database, your app forgets everything the moment you close it.`,
+    whatItDoes: [
+      'Store all your app\'s data — users, products, orders, messages',
+      'Retrieve specific records instantly (find user #4823 in milliseconds)',
+      'Store uploaded files, images, and documents',
+      'Keep data organized with relationships (a user HAS many orders)',
+    ],
+    whenToAdd: { tag: 'Day 1', color: '#F97316', text: 'You need a database almost immediately — most apps are fundamentally just "show data, let users change data." Set it up before building features.' },
+    tools: ['Supabase','PlanetScale','MongoDB','Firebase','Neon','AWS RDS'],
+    tip: 'Supabase is the best starting point — it\'s free, gives you a full Postgres database, file storage, AND authentication in one place. You can be up and running in 10 minutes.',
+  },
+  {
+    id: 'cloud',
+    name: 'Cloud Infrastructure',
+    icon: '☁️',
+    accent: '#22D3EE',
+    tagline: 'The servers that run everything',
+    gridPos: [1, 2],
+    connects: ['database','auth','domain','code','monitoring'],
+    pathStep: 6,
+    stages: ['build','launch','grow'],
+    eli5: `Before the cloud, every company had to buy physical computers and keep them in a room. Now you can <strong>rent computing power by the hour</strong> from Amazon, Google, or Microsoft. They handle the hardware; you just use it. It\'s like renting a kitchen instead of building one.`,
+    whatItDoes: [
+      'Provide servers that run your code 24/7 without you buying hardware',
+      'Scale up or down based on how many users you have at any moment',
+      'Store data redundantly so it\'s never lost, even if a server fails',
+      'Offer hundreds of specialized services (email, AI, video, etc.)',
+    ],
+    whenToAdd: { tag: 'When scaling', color: '#22D3EE', text: 'Tools like Vercel and Supabase handle cloud infrastructure for you at first. Move to raw AWS/GCP when you need more control or cost optimization at scale.' },
+    tools: ['AWS','Google Cloud','Microsoft Azure','Cloudflare'],
+    tip: 'Don\'t start with raw AWS — it\'s overwhelming for beginners. Vercel (for your frontend) and Supabase (for your database) are both cloud services that hide the complexity. Graduate to AWS when you need custom infrastructure.',
+  },
+  {
+    id: 'ai',
+    name: 'AI & Intelligence',
+    icon: '🤖',
+    accent: '#EC4899',
+    tagline: 'Make your app smart',
+    gridPos: [2, 0],
+    connects: ['database','automation'],
+    pathStep: 9,
+    stages: ['build','grow'],
+    eli5: `AI lets your app <strong>understand language, generate text, analyze images, and make smart decisions</strong> — without you having to build any of that yourself. You send a question or task to an AI service via an API, and it sends back an intelligent response. It\'s like hiring a brilliant assistant that works in milliseconds.`,
+    whatItDoes: [
+      'Generate text, summaries, replies, and content automatically',
+      'Understand what users type (even with typos and natural language)',
+      'Analyze images, documents, and data to extract insights',
+      'Build smart search that finds results by meaning, not just keywords',
+    ],
+    whenToAdd: { tag: 'Feature phase', color: '#EC4899', text: 'Add AI once your core app works. It\'s a superpower, not a foundation — your app should function without it, then AI makes it dramatically better.' },
+    tools: ['Anthropic (Claude)','OpenAI (GPT-4)','Pinecone','LangChain','Gemini','Mistral'],
+    tip: 'Start with the Anthropic or OpenAI API — you can call them with just a few lines of code and pay only for what you use (usually fractions of a cent per request). No infrastructure to manage.',
+  },
+  {
+    id: 'analytics',
+    name: 'Analytics',
+    icon: '📊',
+    accent: '#10B981',
+    tagline: 'Understand what your users actually do',
+    gridPos: [2, 1],
+    connects: ['database','domain','monitoring'],
+    pathStep: 8,
+    stages: ['launch','grow'],
+    eli5: `Analytics tells you <strong>what\'s actually happening in your app</strong>. How many people visited today? Which feature do they use most? Where do they give up and leave? Without analytics, you\'re guessing. With it, every product decision is backed by real evidence.`,
+    whatItDoes: [
+      'Count visitors, page views, and unique users in real time',
+      'Track which features users actually use (vs. what you think they use)',
+      'Visualize user journeys — see exactly where people drop off',
+      'Run A/B tests to see which version of a feature works better',
+    ],
+    whenToAdd: { tag: 'At launch', color: '#10B981', text: 'Install analytics BEFORE you launch — you want data from day one. Installing it afterward means you\'ve already missed your most valuable early user behavior.' },
+    tools: ['PostHog','Mixpanel','Google Analytics','Amplitude','Plausible'],
+    tip: 'PostHog is free for up to 1 million events per month and gives you analytics, session recordings, and feature flags in one tool. Install it with a single line of code.',
+  },
+  {
+    id: 'monitoring',
+    name: 'Monitoring & Alerts',
+    icon: '🚨',
+    accent: '#EF4444',
+    tagline: 'Know when something breaks before users do',
+    gridPos: [2, 2],
+    connects: ['cloud','analytics','database'],
+    pathStep: 7,
+    stages: ['launch','grow'],
+    eli5: `Monitoring is your app\'s <strong>alarm system</strong>. When something crashes, slows down, or throws an error, you get notified instantly — before your users start complaining. Without monitoring, you find out your app is broken when an angry customer tells you.`,
+    whatItDoes: [
+      'Capture every error and crash with full context (what caused it)',
+      'Alert you via Slack or email the moment something goes wrong',
+      'Track how fast your app responds (users leave if it\'s slow)',
+      'Show a timeline of when problems started and what changed',
+    ],
+    whenToAdd: { tag: 'Before launch', color: '#EF4444', text: 'Set up error monitoring before you go live. The first real users will discover bugs you never imagined. You want to know about them before they leave and never come back.' },
+    tools: ['Sentry','Datadog','LogRocket','New Relic','Better Uptime'],
+    tip: 'Sentry is free for small apps and takes 5 minutes to install. Paste one snippet of code and you\'ll get an email with the full stack trace the moment anything crashes.',
+  },
+  {
+    id: 'automation',
+    name: 'Automation',
+    icon: '⚙️',
+    accent: '#F59E0B',
+    tagline: 'Make repetitive things happen automatically',
+    gridPos: [3, 0],
+    connects: ['ai','comms','payments'],
+    pathStep: 10,
+    stages: ['grow'],
+    eli5: `Automation means <strong>tasks that used to require a human now happen on their own</strong>. When a user signs up, automatically send them a welcome email. When a payment fails, automatically notify your team. When a form is submitted, automatically add it to your spreadsheet. It\'s like having a tireless employee who does the boring stuff.`,
+    whatItDoes: [
+      'Connect apps together so actions in one trigger actions in another',
+      'Schedule recurring tasks (weekly reports, daily backups, etc.)',
+      'Build multi-step workflows without writing code',
+      'Create AI-powered pipelines that process data automatically',
+    ],
+    whenToAdd: { tag: 'After launch', color: '#F59E0B', text: 'Automate things you\'re already doing manually. First do it by hand, then automate the parts that waste your time. Don\'t automate things you haven\'t validated yet.' },
+    tools: ['n8n','Zapier','Make (Integromat)','Pipedream','Airtable Automations'],
+    tip: 'n8n is free to self-host (run on your own server) and far more powerful than Zapier. Start with Zapier\'s free tier to prototype automations, then move to n8n to save money at scale.',
+  },
+  {
+    id: 'payments',
+    name: 'Payments',
+    icon: '💳',
+    accent: '#6366F1',
+    tagline: 'Accept money from customers',
+    gridPos: [3, 1],
+    connects: ['database','automation'],
+    pathStep: 6,
+    stages: ['launch','grow'],
+    eli5: `Handling payments sounds simple but is <strong>actually very complex and highly regulated</strong>. Stripe and similar services handle all of that for you — credit cards, bank transfers, subscriptions, refunds, fraud detection, and tax compliance — so you can just focus on your product.`,
+    whatItDoes: [
+      'Accept credit cards, Apple Pay, Google Pay, and bank transfers',
+      'Manage subscriptions and recurring billing automatically',
+      'Handle refunds, disputes, and failed payment retries',
+      'Generate invoices and handle sales tax in 100+ countries',
+    ],
+    whenToAdd: { tag: 'Before charging', color: '#6366F1', text: 'Add payments when you\'re ready to charge real customers. Test with small amounts first. Never handle raw credit card data yourself — always use Stripe or similar.' },
+    tools: ['Stripe','Paddle','Lemon Squeezy','PayPal','Braintree'],
+    tip: 'Stripe is the clear winner for developers — excellent API, great documentation, and free until you process payments (they take 2.9% + $0.30 per transaction). Start here.',
+  },
+  {
+    id: 'comms',
+    name: 'Communications',
+    icon: '💬',
+    accent: '#14B8A6',
+    tagline: 'Keep your team and users connected',
+    gridPos: [3, 2],
+    connects: ['automation','monitoring'],
+    pathStep: 3,
+    stages: ['start','build','launch','grow'],
+    eli5: `This covers two things: <strong>how your team communicates internally</strong> (team chat, video calls, project updates) and <strong>how your app communicates with users</strong> (transactional emails when they sign up, SMS alerts, in-app notifications). Both are essential.`,
+    whatItDoes: [
+      'Team messaging and video calls (so everyone stays aligned)',
+      'Transactional emails to users (welcome, receipt, password reset)',
+      'In-app notifications and push alerts',
+      'Customer support chat embedded in your app',
+    ],
+    whenToAdd: { tag: 'Day 1 (team)', color: '#14B8A6', text: 'Set up team communications immediately. For user-facing emails, add a transactional email service before launch — users expect confirmation emails the moment they sign up.' },
+    tools: ['Slack','Resend','SendGrid','Twilio','Intercom','Discord'],
+    tip: 'For sending emails FROM your app (welcome emails, receipts), use Resend — it\'s the simplest modern email API, free for 3,000 emails/month, and works with just a few lines of code.',
+  },
+];
+
+// Connections (pairs of category IDs)
+const connections = [
+  ['domain','code'],['domain','auth'],['domain','analytics'],['domain','cloud'],
+  ['design','code'],['design','domain'],
+  ['code','cloud'],
+  ['auth','database'],['auth','cloud'],
+  ['database','cloud'],['database','ai'],['database','analytics'],['database','payments'],
+  ['cloud','monitoring'],
+  ['ai','automation'],
+  ['analytics','monitoring'],
+  ['automation','comms'],['automation','payments'],
+  ['payments','database'],
+];
+
+// Stage highlight maps
+const stageHighlights = {
+  all: null, // null means show all
+  start: { ids:['domain','code','database','auth','comms'], steps:[1,2,3,4,5] },
+  build: { ids:['design','ai','database','auth','automation'], steps:[5,4,3,9,10] },
+  launch: { ids:['domain','auth','database','monitoring','analytics','payments'], steps:[1,4,3,7,8,6] },
+  grow: { ids:['ai','analytics','automation','payments','cloud'], steps:[9,8,10,6,7] },
+};
+
+// Beginner path order
+const pathOrder = categories
+  .filter(c => c.pathStep)
+  .sort((a,b) => a.pathStep - b.pathStep);
+
+// ─────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────
+let selectedId = null;
+let currentStage = 'all';
+
+// ─────────────────────────────────────────────────────────
+// RENDER NODES
+// ─────────────────────────────────────────────────────────
+function renderNodes() {
+  const grid = document.getElementById('nodesGrid');
+  grid.innerHTML = '';
+  // 4 rows × 3 cols
+  for (let row = 0; row < 4; row++) {
+    for (let col = 0; col < 3; col++) {
+      const cat = categories.find(c => c.gridPos[0] === row && c.gridPos[1] === col);
+      if (!cat) {
+        const empty = document.createElement('div');
+        grid.appendChild(empty);
+        continue;
+      }
+      const node = document.createElement('div');
+      node.className = 'cat-node';
+      node.id = `node-${cat.id}`;
+      node.style.setProperty('--accent', cat.accent);
+      node.style.animationDelay = `${(row * 3 + col) * 0.05}s`;
+      node.innerHTML = `
+        <span class="node-step">${cat.pathStep}</span>
+        <div class="node-icon">${cat.icon}</div>
+        <div class="node-name">${cat.name}</div>
+        <div class="node-tagline">${cat.tagline}</div>
+      `;
+      node.addEventListener('click', () => selectNode(cat.id));
+      grid.appendChild(node);
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// RENDER SVG CONNECTIONS
+// ─────────────────────────────────────────────────────────
+function renderConnections() {
+  const svg = document.getElementById('connections-svg');
+  const grid = document.getElementById('nodesGrid');
+  svg.innerHTML = '';
+
+  function getNodeCenter(id) {
+    const el = document.getElementById(`node-${id}`);
+    if (!el) return null;
+    const gridRect = grid.getBoundingClientRect();
+    const nodeRect = el.getBoundingClientRect();
+    return {
+      x: nodeRect.left - gridRect.left + nodeRect.width / 2,
+      y: nodeRect.top - gridRect.top + nodeRect.height / 2,
+    };
+  }
+
+  connections.forEach(([a, b]) => {
+    const pa = getNodeCenter(a);
+    const pb = getNodeCenter(b);
+    if (!pa || !pb) return;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    const cx = (pa.x + pb.x) / 2;
+    const cy = (pa.y + pb.y) / 2;
+    const d = `M ${pa.x} ${pa.y} Q ${cx} ${cy} ${pb.x} ${pb.y}`;
+    line.setAttribute('d', d);
+    line.setAttribute('class', 'conn-line');
+    line.setAttribute('data-a', a);
+    line.setAttribute('data-b', b);
+    svg.appendChild(line);
+  });
+}
+
+// ─────────────────────────────────────────────────────────
+// RENDER BEGINNER PATH
+// ─────────────────────────────────────────────────────────
+function renderPath() {
+  const container = document.getElementById('pathSteps');
+  container.innerHTML = '';
+  pathOrder.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'path-step';
+    btn.id = `path-${cat.id}`;
+    btn.innerHTML = `
+      <div class="path-step-num">${cat.pathStep}</div>
+      <div class="path-step-icon">${cat.icon}</div>
+      <div class="path-step-name">${cat.name.replace(' & ',' &\n')}</div>
+    `;
+    btn.addEventListener('click', () => selectNode(cat.id));
+    container.appendChild(btn);
+  });
+}
+
+// ─────────────────────────────────────────────────────────
+// SELECT NODE
+// ─────────────────────────────────────────────────────────
+function selectNode(id) {
+  selectedId = id;
+  const cat = categories.find(c => c.id === id);
+  if (!cat) return;
+
+  // Update node states
+  categories.forEach(c => {
+    const node = document.getElementById(`node-${c.id}`);
+    if (!node) return;
+    if (c.id === id) {
+      node.classList.add('selected');
+      node.classList.remove('dimmed');
+    } else if (cat.connects.includes(c.id)) {
+      node.classList.remove('selected','dimmed');
+    } else {
+      node.classList.add('dimmed');
+      node.classList.remove('selected');
+    }
+  });
+
+  // Update connection lines
+  document.querySelectorAll('.conn-line').forEach(line => {
+    const a = line.getAttribute('data-a');
+    const b = line.getAttribute('data-b');
+    if (a === id || b === id) {
+      line.classList.add('active');
+      line.classList.remove('dimmed');
+    } else {
+      line.classList.add('dimmed');
+      line.classList.remove('active');
+    }
+  });
+
+  // Update path steps
+  document.querySelectorAll('.path-step').forEach(el => el.classList.remove('active-step'));
+  const pathEl = document.getElementById(`path-${id}`);
+  if (pathEl) {
+    pathEl.classList.add('active-step');
+    pathEl.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+  }
+
+  // Status bar
+  document.getElementById('selectedStatus').textContent = `Viewing: ${cat.name} · ${cat.connects.length} connections`;
+
+  // Render detail panel
+  renderDetail(cat);
+}
+
+function deselectAll() {
+  selectedId = null;
+  categories.forEach(c => {
+    const node = document.getElementById(`node-${c.id}`);
+    if (!node) return;
+    node.classList.remove('selected','dimmed');
+    if (currentStage !== 'all') applyStageHighlight(c);
+  });
+  document.querySelectorAll('.conn-line').forEach(line => {
+    line.classList.remove('active','dimmed');
+  });
+  document.querySelectorAll('.path-step').forEach(el => el.classList.remove('active-step'));
+  document.getElementById('selectedStatus').textContent = 'Click any block to explore';
+  document.getElementById('welcomeState').style.display = 'flex';
+  document.getElementById('detailContent').classList.remove('visible');
+}
+
+// ─────────────────────────────────────────────────────────
+// RENDER DETAIL PANEL
+// ─────────────────────────────────────────────────────────
+function renderDetail(cat) {
+  document.getElementById('welcomeState').style.display = 'none';
+  const detail = document.getElementById('detailContent');
+  detail.classList.add('visible');
+
+  const connectedCats = cat.connects.map(id => categories.find(c => c.id === id)).filter(Boolean);
+
+  detail.innerHTML = `
+    <div class="detail-hdr">
+      <div class="detail-icon-row">
+        <div class="detail-icon" style="border-color:${cat.accent}33;box-shadow:0 0 20px ${cat.accent}22">${cat.icon}</div>
+        <div class="detail-title-wrap">
+          <div class="detail-cat-label" style="color:${cat.accent}">Category · Step ${cat.pathStep} of 10</div>
+          <div class="detail-title">${cat.name}</div>
+        </div>
+      </div>
+      <div class="detail-tagline">${cat.tagline}</div>
+    </div>
+
+    <div style="padding:16px 22px 0">
+      <div class="eli5-box" style="border-color:${cat.accent}">${cat.eli5}</div>
+    </div>
+
+    <div class="detail-section">
+      <div class="det-sec-label">What it actually does</div>
+      ${cat.whatItDoes.map(item => `
+        <div style="display:flex;gap:8px;padding:5px 0;font-size:12.5px;color:#CBD5E8;line-height:1.45;">
+          <span style="color:${cat.accent};flex-shrink:0;margin-top:1px">▸</span>
+          <span>${item}</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="detail-section">
+      <div class="det-sec-label">When to add this</div>
+      <div class="when-card">
+        <span class="when-tag" style="background:${cat.whenToAdd.color}22;color:${cat.whenToAdd.color}">${cat.whenToAdd.tag}</span>
+        <div>${cat.whenToAdd.text}</div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="det-sec-label">Connects to (${connectedCats.length})</div>
+      <div class="connects-list">
+        ${connectedCats.map(c => `
+          <div class="connect-chip" onclick="selectNode('${c.id}')">
+            <div class="connect-chip-dot" style="background:${c.accent}"></div>
+            ${c.icon} ${c.name}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="det-sec-label">Popular tools in this category</div>
+      <div class="tools-list">
+        ${cat.tools.map(t => `<div class="tool-chip">${t}</div>`).join('')}
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-label">💡 Beginner Tip</div>
+      <div class="tip-text">${cat.tip}</div>
+    </div>
+
+    <div style="padding:0 22px 20px;display:flex;gap:8px;">
+      <button onclick="goToExplorer('${cat.id}')" style="flex:1;padding:10px;border-radius:9px;background:${cat.accent};border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:12.5px;color:${cat.id==='auth'?'#0B1B3A':'#fff'};cursor:pointer;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+        Browse ${cat.name} Tools →
+      </button>
+      <button onclick="deselectAll()" style="padding:10px 16px;border-radius:9px;background:transparent;border:1px solid rgba(255,255,255,.12);font-family:'Nunito',sans-serif;font-size:12px;color:#7A90B8;cursor:pointer;" onmouseover="this.style.borderColor='rgba(255,255,255,.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,.12)'">
+        ✕
+      </button>
+    </div>
+  `;
+
+  // Scroll detail to top
+  detail.scrollTop = 0;
+}
+
+function goToExplorer(catId) {
+  // In a real implementation, navigate to the explorer with this category pre-selected
+  location.href='./explore.html'; 
+}
+
+// ─────────────────────────────────────────────────────────
+// STAGE HIGHLIGHTING
+// ─────────────────────────────────────────────────────────
+function setStage(btn, stage) {
+  document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentStage = stage;
+
+  if (selectedId) deselectAll();
+
+  categories.forEach(c => {
+    const node = document.getElementById(`node-${c.id}`);
+    if (!node) return;
+    node.classList.remove('selected','dimmed','stage-highlight');
+    applyStageHighlight(c);
+  });
+
+  document.querySelectorAll('.conn-line').forEach(line => {
+    line.classList.remove('active','dimmed');
+  });
+}
+
+function applyStageHighlight(cat) {
+  const node = document.getElementById(`node-${cat.id}`);
+  if (!node) return;
+  const stage = stageHighlights[currentStage];
+  if (!stage) return; // 'all' — no highlights
+  if (stage.ids.includes(cat.id)) {
+    node.classList.add('stage-highlight');
+    node.style.setProperty('--accent', cat.accent);
+  } else {
+    node.classList.add('dimmed');
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// INIT + RESIZE
+// ─────────────────────────────────────────────────────────
+function init() {
+  renderNodes();
+  renderPath();
+  // Draw connections after nodes render
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      renderConnections();
+    });
+  });
+}
+
+window.addEventListener('resize', () => {
+  clearTimeout(window._resizeTimer);
+  window._resizeTimer = setTimeout(renderConnections, 100);
+});
+
+// Keyboard: Escape to deselect
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && selectedId) deselectAll();
+});
+
+init();
+</script>
+
+<div style="height:28px"></div>
+</body>
+</html>
