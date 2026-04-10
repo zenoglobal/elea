@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elea — Theme Concepts Vol. 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&family=Anybody:wght@600;700;800&family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Lexend:wght@400;500;600;700&family=Chivo+Mono:wght@400;600;700&family=Clash+Display:wght@600;700&family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0D0D0D;color:#fff;padding:28px 24px 60px;font-family:'DM Sans',sans-serif;}
+
+.page-header{text-align:center;margin-bottom:36px;}
+.page-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#fff;margin-bottom:5px;}
+.page-sub{font-size:12.5px;color:#555;margin-bottom:14px;}
+.vols{display:inline-flex;gap:8px;}
+.vol-tag{font-size:10.5px;padding:3px 12px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#555;}
+.vol-tag.active{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.2);color:#C9A84C;}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1180px;margin:0 auto;}
+.tw{border-radius:14px;overflow:hidden;position:relative;}
+.t-lbl{position:absolute;top:12px;left:12px;z-index:10;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;font-weight:700;padding:3px 10px;border-radius:20px;backdrop-filter:blur(12px);}
+.t-foot{padding:9px 16px 12px;display:flex;align-items:center;justify-content:space-between;}
+.t-foot-desc{font-size:9.5px;opacity:.4;line-height:1.4;}
+.t-pick{padding:7px 16px;border-radius:7px;font-size:11.5px;font-weight:700;cursor:pointer;border:none;transition:opacity .15s;white-space:nowrap;}
+.t-pick:hover{opacity:.85;}
+.t-wrap{padding:20px 20px 16px;}
+.t-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:12px;}
+.t-logo{display:flex;align-items:center;gap:9px;}
+.t-nav{display:flex;gap:2px;}
+.t-tab{padding:4px 11px;border-radius:5px;font-size:10.5px;font-weight:600;background:transparent;border:none;cursor:pointer;}
+.t-rows{display:flex;flex-direction:column;gap:5px;}
+.t-row{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;}
+.t-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.t-info{flex:1;min-width:0;}
+.t-nm{font-size:12.5px;font-weight:600;}
+.t-ct{font-size:9.5px;margin-top:1px;}
+.t-right{text-align:right;flex-shrink:0;}
+.t-cost{font-size:13px;font-weight:700;}
+.t-due{font-size:9px;margin-top:2px;}
+.t-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:10px;}
+.t-stat{border-radius:7px;padding:8px 10px;text-align:center;}
+.t-sv{font-size:17px;font-weight:700;line-height:1;}
+.t-sl{font-size:8px;text-transform:uppercase;letter-spacing:1px;margin-top:2px;opacity:.45;}
+
+/* ══════════════════════════════════════════
+   M — MESH GRADIENT
+   Dark with floating gradient orbs, fluid
+══════════════════════════════════════════ */
+.tm{position:relative;background:#08060F;}
+.tm::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 15% 20%,rgba(124,58,237,.18) 0%,transparent 55%),radial-gradient(ellipse 50% 50% at 85% 80%,rgba(16,185,129,.12) 0%,transparent 50%),radial-gradient(ellipse 40% 40% at 50% 50%,rgba(245,158,11,.06) 0%,transparent 50%);pointer-events:none;}
+.tm .t-lbl{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);}
+.tm .t-pick{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;backdrop-filter:blur(10px);}
+.tm .t-header{border-bottom:1px solid rgba(255,255,255,.06);}
+.tm-mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,rgba(124,58,237,.6),rgba(16,185,129,.6));backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;border:1px solid rgba(255,255,255,.15);}
+.tm .t-name{font-family:'Lexend',sans-serif;font-size:15px;font-weight:600;color:rgba(255,255,255,.9);}
+.tm .t-tab{color:rgba(255,255,255,.2);font-family:'Lexend',sans-serif;font-size:10px;}
+.tm .t-tab.a{color:rgba(255,255,255,.85);background:rgba(255,255,255,.07);}
+.tm .t-row{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);backdrop-filter:blur(4px);}
+.tm .t-icon{background:rgba(255,255,255,.07);border-radius:8px;}
+.tm .t-nm{color:rgba(255,255,255,.88);font-family:'Lexend',sans-serif;font-size:12px;}
+.tm .t-ct{color:rgba(255,255,255,.28);}
+.tm .t-cost{background:linear-gradient(135deg,#7C3AED,#10B981);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.tm .t-cost.hi{background:linear-gradient(135deg,#F59E0B,#EF4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.tm .t-due{color:rgba(255,255,255,.2);}
+.tm .t-stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(4px);}
+.tm .t-sv{color:rgba(255,255,255,.85);font-family:'Lexend',sans-serif;}
+.tm .t-foot{background:rgba(8,6,15,.9);border-top:1px solid rgba(255,255,255,.04);}
+
+/* ══════════════════════════════════════════
+   N — DEEP VIOLET
+   Rich purple-indigo + electric lavender
+══════════════════════════════════════════ */
+.tn{background:#0C0520;font-family:'Inter Tight',sans-serif;}
+.tn .t-lbl{background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.2);color:#C4B5FD;}
+.tn .t-pick{background:#7C3AED;color:#fff;}
+.tn .t-header{border-bottom:1px solid rgba(124,58,237,.15);}
+.tn-mark{width:28px;height:28px;border-radius:6px;border:1.5px solid rgba(167,139,250,.4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#C4B5FD;}
+.tn .t-name{font-size:15px;font-weight:700;color:#EDE9FE;letter-spacing:-.2px;}
+.tn .t-tab{color:rgba(196,181,253,.2);font-size:10.5px;}
+.tn .t-tab.a{color:#C4B5FD;background:rgba(124,58,237,.12);}
+.tn .t-row{background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.12);}
+.tn .t-icon{background:rgba(124,58,237,.12);}
+.tn .t-nm{color:#EDE9FE;font-weight:600;}
+.tn .t-ct{color:rgba(196,181,253,.3);}
+.tn .t-cost{color:#C4B5FD;}
+.tn .t-cost.hi{color:#FCA5A5;}
+.tn .t-due{color:rgba(196,181,253,.25);}
+.tn .t-stat{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.12);}
+.tn .t-sv{color:#C4B5FD;}
+.tn .t-sv.hi{color:#FCA5A5;}
+.tn .t-foot{background:#080316;border-top:1px solid rgba(124,58,237,.1);}
+
+/* ══════════════════════════════════════════
+   O — AMBER EMBER
+   Near-black + deep amber + fire orange
+══════════════════════════════════════════ */
+.to2{background:#0E0900;font-family:'Chivo Mono',monospace;}
+.to2 .t-lbl{background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.2);color:#FB923C;}
+.to2 .t-pick{background:linear-gradient(135deg,#F59E0B,#EF4444);color:#0E0900;font-weight:700;}
+.to2 .t-header{border-bottom:1px solid rgba(251,146,60,.1);}
+.to2-mark{width:28px;height:28px;border-radius:5px;background:rgba(251,146,60,.15);border:1px solid rgba(251,146,60,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#FB923C;}
+.to2 .t-name{font-size:13px;font-weight:700;color:#FDE68A;letter-spacing:.3px;}
+.to2 .t-tab{color:rgba(251,146,60,.25);font-size:10px;}
+.to2 .t-tab.a{color:#FB923C;background:rgba(251,146,60,.1);}
+.to2 .t-row{background:rgba(251,146,60,.04);border:1px solid rgba(251,146,60,.08);}
+.to2 .t-icon{background:rgba(251,146,60,.08);border-radius:4px;}
+.to2 .t-nm{color:#FDE68A;font-size:11.5px;}
+.to2 .t-ct{color:rgba(251,146,60,.35);font-size:9px;}
+.to2 .t-cost{color:#FB923C;}
+.to2 .t-cost.hi{color:#EF4444;}
+.to2 .t-due{color:rgba(251,146,60,.25);}
+.to2 .t-stat{background:rgba(251,146,60,.06);border:1px solid rgba(251,146,60,.1);}
+.to2 .t-sv{color:#FB923C;}
+.to2 .t-sv.hi{color:#EF4444;}
+.to2 .t-foot{background:#080600;border-top:1px solid rgba(251,146,60,.06);}
+
+/* ══════════════════════════════════════════
+   P — ARCTIC MINIMAL
+   Ice white + barely-there grey + cool blue
+══════════════════════════════════════════ */
+.tp{background:#FAFBFC;color:#0F172A;font-family:'Lexend',sans-serif;}
+.tp .t-lbl{background:rgba(148,163,184,.1);border:1px solid rgba(148,163,184,.2);color:#64748B;}
+.tp .t-pick{background:#0F172A;color:#fff;}
+.tp .t-header{border-bottom:1px solid #E2E8F0;}
+.tp-mark{width:28px;height:28px;border-radius:6px;background:#0F172A;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
+.tp .t-name{font-size:15px;font-weight:700;color:#0F172A;}
+.tp .t-tab{color:#CBD5E1;font-size:10.5px;}
+.tp .t-tab.a{color:#0F172A;background:#F1F5F9;}
+.tp .t-row{background:#F8FAFC;border:1px solid #E2E8F0;}
+.tp .t-icon{background:#F1F5F9;border-radius:6px;}
+.tp .t-nm{color:#0F172A;font-weight:600;}
+.tp .t-ct{color:#94A3B8;}
+.tp .t-cost{color:#0F172A;}
+.tp .t-cost.hi{color:#DC2626;}
+.tp .t-due{color:#CBD5E1;}
+.tp .t-stat{background:#F1F5F9;border:1px solid #E2E8F0;}
+.tp .t-sv{color:#0F172A;}
+.tp .t-sv.hi{color:#DC2626;}
+.tp .t-foot{background:#F1F5F9;border-top:1px solid #E2E8F0;}
+
+/* ══════════════════════════════════════════
+   Q — RETRO COMPUTING
+   Green phosphor on true black, dotgrid CRT
+══════════════════════════════════════════ */
+.tq{background:#000;font-family:'Chivo Mono',monospace;position:relative;}
+.tq::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,.02) 2px,rgba(0,255,65,.02) 4px);pointer-events:none;z-index:0;}
+.tq .t-wrap,.tq .t-footer{position:relative;z-index:1;}
+.tq .t-lbl{background:rgba(0,255,65,.07);border:1px solid rgba(0,255,65,.2);color:#00FF41;}
+.tq .t-pick{background:#00FF41;color:#000;font-weight:700;}
+.tq .t-header{border-bottom:1px solid rgba(0,255,65,.15);}
+.tq-mark{width:28px;height:28px;border:1.5px solid #00FF41;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#00FF41;}
+.tq .t-name{font-size:13px;font-weight:700;color:#00FF41;letter-spacing:1px;}
+.tq .t-tab{color:rgba(0,255,65,.2);font-size:9.5px;letter-spacing:.5px;}
+.tq .t-tab.a{color:#00FF41;background:rgba(0,255,65,.07);}
+.tq .t-row{background:rgba(0,255,65,.03);border:1px solid rgba(0,255,65,.1);}
+.tq .t-icon{background:rgba(0,255,65,.07);border-radius:0;}
+.tq .t-nm{color:#00FF41;font-size:11.5px;}
+.tq .t-ct{color:rgba(0,255,65,.4);font-size:9px;}
+.tq .t-cost{color:#00FF41;}
+.tq .t-cost.hi{color:#FFD700;}
+.tq .t-due{color:rgba(0,255,65,.3);}
+.tq .t-stat{background:rgba(0,255,65,.04);border:1px solid rgba(0,255,65,.1);}
+.tq .t-sv{color:#00FF41;}
+.tq .t-sv.hi{color:#FFD700;}
+.tq .t-foot{background:#000;border-top:1px solid rgba(0,255,65,.1);position:relative;z-index:1;}
+
+/* ══════════════════════════════════════════
+   R — SLATE COPPER
+   Dark blue-grey + burnished copper + rust
+══════════════════════════════════════════ */
+.tr{background:#111820;font-family:'Anybody',sans-serif;}
+.tr .t-lbl{background:rgba(180,120,60,.1);border:1px solid rgba(180,120,60,.2);color:#C8915A;}
+.tr .t-pick{background:linear-gradient(135deg,#B47D3C,#8B5E2A);color:#fff;}
+.tr .t-header{border-bottom:1px solid rgba(180,120,60,.1);}
+.tr-mark{width:28px;height:28px;border-radius:5px;background:linear-gradient(135deg,rgba(180,120,60,.3),rgba(139,94,42,.3));border:1px solid rgba(180,120,60,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#C8915A;}
+.tr .t-name{font-size:14px;font-weight:700;color:#E8D5C0;letter-spacing:-.1px;}
+.tr .t-tab{color:rgba(200,145,90,.25);font-size:10.5px;}
+.tr .t-tab.a{color:#C8915A;background:rgba(180,120,60,.1);}
+.tr .t-row{background:rgba(180,120,60,.05);border:1px solid rgba(180,120,60,.09);}
+.tr .t-icon{background:rgba(180,120,60,.08);border-radius:5px;}
+.tr .t-nm{color:#E8D5C0;font-weight:600;}
+.tr .t-ct{color:rgba(200,145,90,.35);}
+.tr .t-cost{color:#C8915A;}
+.tr .t-cost.hi{color:#E05A3A;}
+.tr .t-due{color:rgba(200,145,90,.25);}
+.tr .t-stat{background:rgba(180,120,60,.06);border:1px solid rgba(180,120,60,.1);}
+.tr .t-sv{color:#C8915A;}
+.tr .t-sv.hi{color:#E05A3A;}
+.tr .t-foot{background:#0D1219;border-top:1px solid rgba(180,120,60,.08);}
+
+/* ══════════════════════════════════════════
+   S — PAPER WHITE
+   True paper white + jet black + electric teal
+══════════════════════════════════════════ */
+.ts{background:#FFFFFF;color:#111;font-family:'Inter Tight',sans-serif;}
+.ts .t-lbl{background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);color:#0891B2;}
+.ts .t-pick{background:#06B6D4;color:#fff;}
+.ts .t-header{border-bottom:3px solid #111;}
+.ts-mark{width:28px;height:28px;background:#111;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;}
+.ts .t-name{font-size:16px;font-weight:800;color:#111;letter-spacing:-.4px;}
+.ts .t-tab{color:#CCC;font-size:10.5px;font-weight:700;}
+.ts .t-tab.a{color:#111;border-bottom:2px solid #06B6D4;border-radius:0;background:transparent;}
+.ts .t-row{background:#F9F9F9;border:1px solid #EBEBEB;border-left:3px solid transparent;}
+.ts .t-row.active{border-left-color:#06B6D4;}
+.ts .t-row.warn{border-left-color:#EF4444;}
+.ts .t-icon{background:#EFEFEF;border-radius:4px;}
+.ts .t-nm{color:#111;font-weight:700;}
+.ts .t-ct{color:#999;}
+.ts .t-cost{color:#111;font-weight:700;}
+.ts .t-cost.hi{color:#EF4444;}
+.ts .t-due{color:#CCC;}
+.ts .t-stat{background:#F5F5F5;border:1px solid #E8E8E8;}
+.ts .t-sv{color:#111;}
+.ts .t-sv.hi{color:#EF4444;}
+.ts .t-foot{background:#F5F5F5;border-top:2px solid #111;}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-title">Elea — Theme Concepts Vol. 3</div>
+  <div class="page-sub">Eight more directions. M through S.</div>
+  <div class="vols">
+    <span class="vol-tag">Vol. 1 — A to D</span>
+    <span class="vol-tag">Vol. 2 — E to L</span>
+    <span class="vol-tag active">Vol. 3 — M to S (this file)</span>
+  </div>
+</div>
+
+<div class="grid">
+
+  <!-- M: MESH GRADIENT -->
+  <div class="tw">
+    <div class="t-lbl">M — Mesh Gradient</div>
+    <div class="tm">
+      <div class="t-wrap" style="position:relative;z-index:1">
+        <div class="t-header">
+          <div class="t-logo">
+            <div class="tm-mark">Z</div>
+            <div class="t-name tm" style="font-family:'Lexend',sans-serif;color:rgba(255,255,255,.9)">Elea</div>
+          </div>
+          <div class="t-nav">
+            <button class="t-tab tm">1 Learn</button>
+            <button class="t-tab tm a">4 Stack</button>
+            <button class="t-tab tm">5 Audit</button>
+          </div>
+        </div>
+        <div class="t-rows">
+          <div class="t-row tm"><div class="t-icon tm">🤖</div><div class="t-info"><div class="t-nm tm">OpenAI API</div><div class="t-ct tm">AI · Due Apr 1 · usage-based</div></div><div class="t-right"><div class="t-cost tm hi">$340/mo</div><div class="t-due tm">47 errors 24h</div></div></div>
+          <div class="t-row tm"><div class="t-icon tm">🗃</div><div class="t-info"><div class="t-nm tm">Supabase</div><div class="t-ct tm">Database + Auth + Storage</div></div><div class="t-right"><div class="t-cost tm">$25/mo</div><div class="t-due tm">Renews Apr 3</div></div></div>
+          <div class="t-row tm"><div class="t-icon tm">▲</div><div class="t-info"><div class="t-nm tm">Vercel</div><div class="t-ct tm">Hosting</div></div><div class="t-right"><div class="t-cost tm">$20/mo</div><div class="t-due tm">Renews Apr 5</div></div></div>
+        </div>
+        <div class="t-stats">
+          <div class="t-stat tm"><div class="t-sv tm">$389</div><div class="t-sl tm">Monthly</div></div>
+          <div class="t-stat tm"><div class="t-sv tm">74%</div><div class="t-sl tm">Health</div></div>
+          <div class="t-stat tm"><div class="t-sv tm">7</div><div class="t-sl tm">Tools</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="t-foot tm">
+      <div class="t-foot-desc" style="color:rgba(255,255,255,.2)">Floating gradient orbs · Frosted glass cards · Lexend · Fluid &amp; soft</div>
+      <button class="t-pick" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;backdrop-filter:blur(10px)">Try this →</button>
+    </div>
+  </div>
+
+  <!-- N: DEEP VIOLET -->
+  <div class="tw">
+    <div class="t-lbl" style="background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.2);color:#C4B5FD">N — Deep Violet</div>
+    <div class="tn">
+      <div class="t-wrap">
+        <div class="t-header">
+          <div class="t-logo">
+            <div class="tn-mark">Z</div>
+            <div class="t-name tn">Elea</div>
+          </div>
+          <div class="t-nav">
+            <button class="t-tab tn">1 Learn</button>
+            <button class="t-tab tn a">4 My Stack</button>
+            <button class="t-tab tn">5 Audit</button>
+          </div>
+        </div>
+        <div class="t-rows">
+          <div class="t-row tn"><div class="t-icon tn">🤖</div><div class="t-info"><div class="t-nm tn">OpenAI API</div><div class="t-ct tn">AI · usage-based · Due Apr 1</div></div><div class="t-right"><div class="t-cost tn hi">$340/mo</div><div class="t-due tn">47 errors 24h</div></div></div>
+          <div class="t-row tn"><div class="t-icon tn">🗃</div><div class="t-info"><div class="t-nm tn">Supabase</div><div class="t-ct tn">Database + Auth + Storage</div></div><div class="t-right"><div class="t-cost tn">$25/mo</div><div class="t-due tn">Renews Apr 3</div></div></div>
+          <div class="t-row tn"><div class="t-icon tn">▲</div><div class="t-info"><div class="t-nm tn">Vercel</div><div class="t-ct tn">Hosting</div></div><div class="t-right"><div class="t-cost tn">$20/mo</div><div class="t-due tn">Renews Apr 5</div></div></div>
+        </div>
+        <div class="t-stats">
+          <div class="t-stat tn"><div class="t-sv tn">$389</div><div class="t-sl tn">Monthly</div></div>
+          <div class="t-stat tn"><div class="t-sv tn">74%</div><div class="t-sl tn">Health</div></div>
+          <div class="t-stat tn"><div class="t-sv hi tn">2</div><div class="t-sl tn">Warnings</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="t-foot tn" style="background:#080316;border-top:1px solid rgba(124,58,237,.1)">
+      <div class="t-foot-desc" style="color:rgba(196,181,253,.2)">Deep purple-indigo · Electric lavender · Inter Tight · Rich focus</div>
+      <button class="t-pick" style="background:#7C3AED;color:#fff">Try this →</button>
+    </div>
+  </div>
+
+  <!-- O: AMBER EMBER -->
+  <div class="tw">
+    <div class="t-lbl" style="background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.2);color:#FB923C">O — Amber Ember</div>
+    <div class="to2">
+      <div class="t-wrap">
+        <div class="t-header">
+          <div class="t-logo">
+            <div class="to2-mark">Z</div>
+            <div class="t-name to2">ELEA</div>
+          </div>
+          <div class="t-nav">
+            <button class="t-tab to2">LEARN</button>
+            <button class="t-tab to2 a">STACK</button>
+            <button class="t-tab to2">BUILD</button>
+          </div>
+        </div>
+        <div class="t-rows">
+          <div class="t-row to2"><div class="t-icon to2">🤖</div><div class="t-info"><div class="t-nm to2">openai_api</div><div class="t-ct to2">ai · due:apr-01 · usage</div></div><div class="t-right"><div class="t-cost to2 hi">$340</div><div class="t-due to2">ERR:47 24h</div></div></div>
+          <div class="t-row to2"><div class="t-icon to2">🗃</div><div class="t-info"><div class="t-nm to2">supabase.pro</div><div class="t-ct to2">db+auth+storage · renew:apr-03</div></div><div class="t-right"><div class="t-cost to2">$25</div><div class="t-due to2">OK</div></div></div>
+          <div class="t-row to2"><div class="t-icon to2">▲</div><div class="t-info"><div class="t-nm to2">vercel.pro</div><div class="t-ct to2">hosting · renew:apr-05</div></div><div class="t-right"><div class="t-cost to2">$20</div><div class="t-due to2">OK</div></div></div>
+        </div>
+        <div class="t-stats">
+          <div class="t-stat to2"><div class="t-sv to2">$389</div><div class="t-sl to2">monthly</div></div>
+          <div class="t-stat to2"><div class="t-sv to2">74%</div><div class="t-sl to2">health</div></div>
+          <div class="t-stat to2"><div class="t-sv hi to2">2</div><div class="t-sl to2">warn</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="t-foot to2" style="background:#080600;border-top:1px solid rgba(251,146,60,.06)">
+      <div class="t-foot-desc" style="color:rgba(251,146,60,.2)">Near-black · Deep amber · Fire orange · Chivo Mono · Warm terminal</div>
+      <button class="t-pick" style="background:linear-gradient(135deg,#F59E0B,#EF4444);color:#0E0900">Try this →</button>
+    </div>
+  </div>
+
+  <!-- P: ARCTIC MINIMAL -->
+  <div class="tw" style="box-shadow:0 0 0 1px rgba(255,255,255,.06)">
+    <div class="t-lbl" style="background:rgba(148,163,184,.1);border:1px solid rgba(148,163,184,.2);color:#64748B">P — Arctic Minimal</div>
+    <div class="tp">
+      <div class="t-wrap">
+        <div class="t-header">
+          <div class="t-logo">
+            <div class="tp-mark">Z</div>
+            <div class="t-name tp">Elea</div>
+          </div>
+          <div class="t-nav">
+            <button class="t-tab tp">1 Learn</button>
+            <button class="t-tab tp a">4 Stack</button>
+            <button class="t-tab tp">3 Build</button>
+          </div>
+        </div>
+        <div class="t-rows">
+          <div class="t-row tp"><div class="t-icon tp">🤖</div><div class="t-info"><div class="t-nm tp">OpenAI API</div><div class="t-ct tp">AI · Due Apr 1</div></div><div class="t-right"><div class="t-cost tp hi">$340/mo</div><div class="t-due tp">⚠ 47 errors</div></div></div>
+          <div class="t-row tp"><div class="t-icon tp">🗃</div><div class="t-info"><div class="t-nm tp">Supabase</div><div class="t-ct tp">Database + Auth + Storage</div></div><div class="t-right"><div class="t-cost tp">$25/mo</div><div class="t-due tp">Renews Apr 3</div></div></div>
+          <div class="t-row tp"><div class="t-icon tp">▲</div><div class="t-info"><div class="t-nm tp">Vercel</div><div class="t-ct tp">Hosting</div></div><div class="t-right"><div class="t-cost tp">$20/mo</div><div class="t-due tp">Renews Apr 5</div></div></div>
+        </div>
+        <div class="t-stats">
+          <div class="t-stat tp"><div class="t-sv tp">$389</div><div class="t-sl tp">Monthly</div></div>
+          <div class="t-stat tp"><div class="t-sv tp">74%</div><div class="t-sl tp">Health</div></div>
+          <div class="t-stat tp"><div class="t-sv hi tp">Apr 1</div><div class="t-sl tp">Next bill</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="t-foot tp" style="background:#F1F5F9;border-top:1px solid #E2E8F0">
+      <div class="t-foot-desc" style="color:#CBD5E1">Ice white · Slate-black · Lexend · Ultra-minimal breathable layout</div>
+      <button class="t-pick" style="background:#0F172A;color:#fff">Try this →</button>
+    </div>
+  </div>
+
+  <!-- Q: RETRO COMPUTING -->
+  <div class="tw">
+    <div class="t-lbl" style="background:rgba(0,255,65,.07);border:1px solid rgba(0,255,65,.2);color:#00FF41">Q — Retro Computing</div>
+    <div class="tq">
+      <div class="t-wrap">
+        <div class="t-header">
+          <div class="t-logo">
+            <div class="tq-mark">Z</div>
+            <div class="t-name tq" style="color:#00FF41;letter-spacing:1px">ELEA_v1</div>
+          </div>
+          <div class="t-nav">
+            <button class="t-tab tq">LEARN</button>
+            <button class="t-tab tq a">[STACK]</button>
+            <button class="t-tab tq">BUILD</button>
+          </div>
+        </div>
+        <div class="t-rows">
+          <div class="t-row tq"><div class="t-icon tq" style="font-size:11px">🤖</div><div class="t-info"><div class="t-nm tq">> openai.api</div><div class="t-ct tq">status: WARN · billing: due 04/01</div></div><div class="t-right"><div class="t-cost tq hi">$340</div><div class="t-due tq">ERR[47]</div></div></div>
+          <div class="t-row tq"><div class="t-icon tq" style="font-size:11px">🗃</div><div class="t-info"><div class="t-nm tq">> supabase.db</div><div class="t-ct tq">status: OK · billing: due 04/03</div></div><div class="t-right"><div class="t-cost tq">$25</div><div class="t-due tq">OK</div></div></div>
+          <div class="t-row tq"><div class="t-icon tq" style="font-size:11px">▲</div><div class="t-info"><div class="t-nm tq">> vercel.host</div><div class="t-ct tq">status: OK · billing: due 04/05</div></div><div class="t-right"><div class="t-cost tq">$20</div><div class="t-due tq">OK</div></div></div>
+        </div>
+        <div class="t-stats">
+          <div class="t-stat tq"><div class="t-sv tq">$389</div><div class="t-sl tq">cost/mo</div></div>
+          <div class="t-stat tq"><div class="t-sv tq">74%</div><div class="t-sl tq">health</div></div>
+          <div class="t-stat tq"><div class="t-sv hi tq">WARN</div><div class="t-sl tq">status</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="t-foot tq">
+      <div class="t-foot-desc" style="color:rgba(0,255,65,.2)">True black · Phosphor green · CRT scanlines · Chivo Mono · Retro terminal</div>
+      <button class="t-pick" style="background:#00FF41;color:#000">Try this →</button>
+    </div>
+  </div>
+
+  <!-- R: SLATE COPPER -->
+  <div class="tw">
+    <div class="t-lbl" style="background:rgba(180,120,60,.1);border:1px solid rgba(180,120,60,.2);color:#C8915A">R — Slate Copper</div>
+    <div class="tr">
+      <div class="t-wrap">
+        <div class="t-header">
+          <div class="t-logo">
+            <div class="tr-mark">Z</div>
+            <div class="t-name tr">Elea</div>
+          </div>
+          <div class="t-nav">
+            <button class="t-tab tr">1 Learn</button>
+            <button class="t-tab tr a">4 Stack</button>
+            <button class="t-tab tr">3 Build</button>
+          </div>
+        </div>
+        <div class="t-rows">
+          <div class="t-row tr"><div class="t-icon tr">🤖</div><div class="t-info"><div class="t-nm tr">OpenAI API</div><div class="t-ct tr">AI · Due Apr 1 · usage-based</div></div><div class="t-right"><div class="t-cost tr hi">$340/mo</div><div class="t-due tr">47 errors 24h</div></div></div>
+          <div class="t-row tr"><div class="t-icon tr">🗃</div><div class="t-info"><div class="t-nm tr">Supabase</div><div class="t-ct tr">Database + Auth + Storage</div></div><div class="t-right"><div class="t-cost tr">$25/mo</div><div class="t-due tr">Renews Apr 3</div></div></div>
+          <div class="t-row tr"><div class="t-icon tr">▲</div><div class="t-info"><div class="t-nm tr">Vercel</div><div class="t-ct tr">Hosting</div></div><div class="t-right"><div class="t-cost tr">$20/mo</div><div class="t-due tr">Renews Apr 5</div></div></div>
+        </div>
+        <div class="t-stats">
+          <div class="t-stat tr"><div class="t-sv tr">$389</div><div class="t-sl tr">Monthly</div></div>
+          <div class="t-stat tr"><div class="t-sv tr">74%</div><div class="t-sl tr">Health</div></div>
+          <div class="t-stat tr"><div class="t-sv hi tr">2</div><div class="t-sl tr">Warnings</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="t-foot tr" style="background:#0D1219;border-top:1px solid rgba(180,120,60,.08)">
+      <div class="t-foot-desc" style="color:rgba(200,145,90,.2)">Blue-grey slate · Burnished copper · Anybody font · Industrial warm</div>
+      <button class="t-pick" style="background:linear-gradient(135deg,#B47D3C,#8B5E2A);color:#fff">Try this →</button>
+    </div>
+  </div>
+
+  <!-- S: PAPER WHITE -->
+  <div class="tw" style="box-shadow:0 0 0 1px rgba(255,255,255,.06)">
+    <div class="t-lbl" style="background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);color:#0891B2">S — Paper White</div>
+    <div class="ts">
+      <div class="t-wrap">
+        <div class="t-header">
+          <div class="t-logo">
+            <div class="ts-mark">Z</div>
+            <div class="t-name ts">Elea</div>
+          </div>
+          <div class="t-nav">
+            <button class="t-tab ts">1 Learn</button>
+            <button class="t-tab ts a">4 My Stack</button>
+            <button class="t-tab ts">3 Build</button>
+          </div>
+        </div>
+        <div class="t-rows">
+          <div class="t-row ts warn"><div class="t-icon ts">🤖</div><div class="t-info"><div class="t-nm ts">OpenAI API</div><div class="t-ct ts">AI & Intelligence · Due Apr 1</div></div><div class="t-right"><div class="t-cost ts hi">$340/mo</div><div class="t-due ts">⚠ 47 errors 24h</div></div></div>
+          <div class="t-row ts active"><div class="t-icon ts">🗃</div><div class="t-info"><div class="t-nm ts">Supabase</div><div class="t-ct ts">Database + Auth + Storage</div></div><div class="t-right"><div class="t-cost ts">$25/mo</div><div class="t-due ts">Renews Apr 3</div></div></div>
+          <div class="t-row ts active"><div class="t-icon ts">▲</div><div class="t-info"><div class="t-nm ts">Vercel</div><div class="t-ct ts">Hosting</div></div><div class="t-right"><div class="t-cost ts">$20/mo</div><div class="t-due ts">Renews Apr 5</div></div></div>
+        </div>
+        <div class="t-stats">
+          <div class="t-stat ts"><div class="t-sv ts">$389</div><div class="t-sl ts">Monthly</div></div>
+          <div class="t-stat ts"><div class="t-sv ts">74%</div><div class="t-sl ts">Health</div></div>
+          <div class="t-stat ts"><div class="t-sv hi ts">Apr 1</div><div class="t-sl ts">Next bill</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="t-foot ts" style="background:#F5F5F5;border-top:2px solid #111">
+      <div class="t-foot-desc" style="color:#BBB">Pure paper white · Jet black · Electric teal accent · Inter Tight · Editorial clean</div>
+      <button class="t-pick" style="background:#06B6D4;color:#fff">Try this →</button>
+    </div>
+  </div>
+
+</div>
+
+<div style="text-align:center;margin-top:32px;font-size:12px;color:#444;line-height:1.8;">
+  19 themes total across 3 volumes (A–S).<br>
+  <span style="color:#C9A84C">Name one — or describe a vibe — and I'll apply it to the full prototype.</span><br>
+  <span style="color:#333">You can also mix: e.g. "M's gradient orbs with N's violet palette" or "Q's mono font with H's grey structure"</span>
+</div>
+
+</body>
+</html>
